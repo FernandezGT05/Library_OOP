@@ -46,6 +46,14 @@ class Member(ABC):
             book.borrowed_by=None
             borrower.borrowed_books.remove(book)
             print(f"{self.name} returned {borrower.name}'s book: {book.title}")
+    def list_borrowed_books(self):
+        if not self.borrowed_books:
+            print(f'{self.name} has no books borrowed')
+        else:
+            print(f"Books borrowed by {self.name}")
+            for x in self.borrowed_books:
+                print(f"- {x.title} by {x.author}")
+
 
 class Student(Member):
     def get_borrow_limit(self):
@@ -73,30 +81,54 @@ class Library:
         if book.isbn in self.books:
             self.books.pop(book.isbn)
             print(f'Deleted the book {book.title}' )
+        else:
+            print("Book not found")
+    def find_member(self,memberid):
+        if memberid in self.members:
+            membername=self.members[memberid]
+            print(f'The ID "{memberid}" belongs to the member "{membername.name}"')
+            membername.list_borrowed_books()
+        else:
+            print("Member not found")
+    def find_book(self,isbn):
+        if isbn in self.books:
+            bookname=self.books[isbn]
+            if bookname.available:
+                print(f"The book with the isbn {isbn} is available")
+            else:
+                print(f"The book {bookname.title} is unavailable.",end=" ")
+                print(f"It was borrowed by {bookname.borrowed_by.name}")
+        else:
+            print("That book is not available in this library")
 
 library=Library()
 
 b1=Book("Harry Potter and the Goblet of Fire","J.K.Rowling",9780439139595)
-b2=Book("IT : A Novel","Stephen King",9781501175466)
-b3=Book('Game of Thrones: A Song of Ice and Fire','George R.R. Martin',9780553573404)
-b4=Book("Diary of a Wimpy Kid: The Getaway",'Jeff Kinney',9780241344279)
-s1 = Student("Tharusha", "st001")
-t1 = Teacher("Mr. Perera", "t001")
-s2= Student("Fernandez","st002")
-t2=Teacher("Mrs. silva",'t002')
-library.add_members(s1)
-library.add_members(t1)
-library.add_members(s2)
-library.add_members(t2)
 library.add_book(b1)
+b2=Book("IT : A Novel","Stephen King",9781501175466)
 library.add_book(b2)
+b3=Book('Game of Thrones: A Song of Ice and Fire','George R.R. Martin',9780553573404)
 library.add_book(b3)
+b4=Book("Diary of a Wimpy Kid: The Getaway",'Jeff Kinney',9780241344279)
 library.add_book(b4)
+s1 = Student("Tharusha", "st001")
+library.add_members(s1)
+t1 = Teacher("Mr. Perera", "t001")
+library.add_members(t1)
+s2= Student("Fernandez","st002")
+library.add_members(s2)
+t2=Teacher("Mrs. silva",'t002')
+library.add_members(t2)
+print('\n')
 s1.borrow_book(b1)
 s1.borrow_book(b2)
 s1.borrow_book(b3)
 s1.borrow_book(b4)
 s2.return_book(b1)
 s1.borrow_book(b4)
+s1.list_borrowed_books()
+library.find_member("st001")
+library.find_member("t002")
+library.find_book(9781501175466)
 #print(library.members)
 #print(library.books)
