@@ -33,13 +33,21 @@ class Member(ABC):
             self.borrowed_books.append(book)
             book.borrowed_by=self
             book.available=False
-            print(f"{self.name} successfully borrowed {book.title}")
+            print(f"{self.name} successfully borrowed {book.title} borrowed by {book.borrowed_by.name}")
         else:
             print(f"{self.name} cannot borrow {book.title} : {msg}")
     
+    def return_book(self,book):
+        if book.available:
+            print(f"{book.title} is already in the system.")
+        else:
+            borrower=book.borrowed_by
+            book.available=True
+            book.borrowed_by=None
+            borrower.borrowed_books.remove(book)
+            print(f"{self.name} returned {borrower.name}'s book: {book.title}")
+
 class Student(Member):
-    def __init__(self,name,_member_id):
-        super().__init__(name,_member_id)
     def get_borrow_limit(self):
         return 3
 class Teacher(Member):
@@ -55,7 +63,16 @@ class Library:
     def add_book(self,book):
         self.books[book.isbn]=book
         print('added a new book')
-
+    def del_member(self,member):
+        if member._member_id in self.members:
+            self.members.pop(member._member_id)
+            print(f"Deleted the member {member.name}")
+        else:
+            print('Member not found')
+    def del_book(self,book):
+        if book.isbn in self.books:
+            self.books.pop(book.isbn)
+            print(f'Deleted the book {book.title}' )
 
 library=Library()
 
@@ -78,6 +95,8 @@ library.add_book(b4)
 s1.borrow_book(b1)
 s1.borrow_book(b2)
 s1.borrow_book(b3)
+s1.borrow_book(b4)
+s2.return_book(b1)
 s1.borrow_book(b4)
 #print(library.members)
 #print(library.books)
