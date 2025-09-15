@@ -1,4 +1,4 @@
-
+import json
 from abc import ABC, abstractmethod
 class Book:
     def __init__(self,title,author,isbn,available=True):
@@ -34,6 +34,7 @@ class Member(ABC):
             book.borrowed_by=self
             book.available=False
             print(f"{self.name} successfully borrowed {book.title}")
+            library.save_data()
             input("\nPress Enter to proceed...")
         else:
             print(f"{self.name} cannot borrow {book.title} : {msg}")
@@ -49,6 +50,7 @@ class Member(ABC):
             book.available=True
             book.borrowed_by=None
             borrower.borrowed_books.remove(book)
+            library.save_data()
             if self.name==borrower.name:
                 print(f"{self.name} returned the book: {book.title}")
                 input("\nPress Enter to proceed...")
@@ -77,22 +79,74 @@ class Library:
     def __init__(self):
         self.books={}
         self.members={}
+        self.load_data()
+    def save_data(self):
+        data={
+            "books":[{"Title":b.title,"Author":b.author,"ISBN":b.isbn,"Available":b.available,
+                      "Borrowed By":b.borrowed_by._member_id if b.borrowed_by else None}
+                for b in self.books.values()
+            ],
+            "members":[{"Name":m.name,"ID":m._member_id,"Type":m.__class__.__name__,
+                        "Borrowed books":[{"Title":book.title,"ISBN":book.isbn} for book in m.borrowed_books]}
+                for m in self.members.values()
+
+            ]
+        }
+        with open("data.json","w")as f:
+            json.dump(data,f,indent=4)
+    
+    def load_data(self):
+        try:
+            with open("data.json","r")as f:
+                data=json.load(f)
+        except FileNotFoundError:
+            print("file not found")
+            return
+        #loading boooks
+        for b in data.get("books",[]):
+            isbn=int(b["ISBN"])
+            book=Book(b["Title"],b["Author"],b["ISBN"],b.get("Available",True))
+            self.books[isbn]=book
+        #loading members
+        for m in data.get("members",[]):
+            if m["Type"]=='Student':
+                member=Student(m["Name"],m["ID"])
+            elif m["Type"]=="Teacher":
+                member=Teacher(m["Name"],m["ID"])
+            else:
+                continue
+            self.members[m["ID"]]=member
+            #connecting them
+            for borrowed in m.get("Borrowed books",[]):
+                book=self.books.get(borrowed["ISBN"])
+                if not book:
+                    continue
+                member.borrowed_books.append(book)
+                book.borrowed_by=member
+                book.available=False
+
+
     def add_members(self,member):
         self.members[member._member_id]=member
+        library.save_data()
     def add_book(self,book):
         self.books[book.isbn]=book
-    def del_member(self,member):
-        if member._member_id in self.members:
-            self.members.pop(member._member_id)
-            print(f"Deleted the member {member.name}")
+        self.save_data()
+    def del_member(self,member_id):
+        if member_id in self.members:
+            deleted_member=self.members.pop(member_id)
+            print(f"Deleted the member {deleted_member.name}")
+            library.save_data()
             input("\nPress Enter to proceed...")
+            
         else:
             print('Member not found')
             input("\nPress Enter to proceed...")
-    def del_book(self,book):
-        if book.isbn in self.books:
-            self.books.pop(book.isbn)
-            print(f'Deleted the book {book.title}' )
+    def del_book(self,isbn):
+        if isbn in self.books:
+            deleted_book=self.books.pop(isbn)
+            print(f'Deleted the book {deleted_book.title}' )
+            library.save_data()
             input("\nPress Enter to proceed...")
         else:
             print("Book not found")
@@ -142,22 +196,7 @@ class Library:
 
 library=Library()
 
-b1=Book("Harry Potter and the Goblet of Fire","J.K.Rowling",9780439139595)
-library.add_book(b1)
-b2=Book("IT : A Novel","Stephen King",9781501175466)
-library.add_book(b2)
-b3=Book('Game of Thrones: A Song of Ice and Fire','George R.R. Martin',9780553573404)
-library.add_book(b3)
-b4=Book("Diary of a Wimpy Kid: The Getaway",'Jeff Kinney',9780241344279)
-library.add_book(b4)
-s1 = Student("Tharusha", "st001")
-library.add_members(s1)
-t1 = Teacher("Mr. Perera", "t001")
-library.add_members(t1)
-s2= Student("Fernandez","st002")
-library.add_members(s2)
-t2=Teacher("Mrs. silva",'t002')
-library.add_members(t2)
+
 print('\n')
 
 while True:
@@ -170,7 +209,9 @@ while True:
     print("6. Find book by isbn")
     print("7. List all available books")
     print("8. List all borrowed books")
-    print("9. Exit")
+    print("9. Delete a book")
+    print("10. Delete a member")
+    print("11. Exit")
     
     choice = input("Enter your choice: ")
     if choice == "1":
@@ -243,6 +284,12 @@ while True:
     elif choice=="8":
         library.list_all_borrowed_books()
     elif choice=="9":
+        d=input("Enter the isbn: ")
+        library.del_book(int(d))
+    elif choice=="10":
+        d=input("Enter the member ID: ")
+        library.del_member(d)
+    elif choice=="11":
         print("Exiting the system.")
         break
     else:

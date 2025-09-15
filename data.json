@@ -1,0 +1,62 @@
+{
+    "books": [
+        {
+            "Title": "Harry Potter and the Goblet of Fire",
+            "Author": "J.K.Rowling",
+            "ISBN": 9780439139595,
+            "Available": true,
+            "Borrowed By": null
+        },
+        {
+            "Title": "IT : A Novel",
+            "Author": "Stephen King",
+            "ISBN": 9781501175466,
+            "Available": false,
+            "Borrowed By": "st001"
+        },
+        {
+            "Title": "Game of Thrones: A Song of Ice and Fire",
+            "Author": "George R.R. Martin",
+            "ISBN": 9780553573404,
+            "Available": false,
+            "Borrowed By": "st002"
+        },
+        {
+            "Title": "Diary of a Wimpy Kid: The Getaway",
+            "Author": "Jeff Kinney",
+            "ISBN": 9780241344279,
+            "Available": true,
+            "Borrowed By": null
+        }
+    ],
+    "members": [
+        {
+            "Name": "Tharusha",
+            "ID": "st001",
+            "Type": "Student",
+            "Borrowed books": [
+                {
+                    "Title": "IT : A Novel",
+                    "ISBN": 9781501175466
+                }
+            ]
+        },
+        {
+            "Name": "Fernandez",
+            "ID": "st002",
+            "Type": "Student",
+            "Borrowed books": [
+                {
+                    "Title": "Game of Thrones: A Song of Ice and Fire",
+                    "ISBN": 9780553573404
+                }
+            ]
+        },
+        {
+            "Name": "Gayan",
+            "ID": "t001",
+            "Type": "Teacher",
+            "Borrowed books": []
+        }
+    ]
+}
