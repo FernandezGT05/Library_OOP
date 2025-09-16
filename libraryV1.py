@@ -1,14 +1,34 @@
 import json
+import requests
 from abc import ABC, abstractmethod
+
+def get_book_info(isbn):
+    
+    url=f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}"
+    response=requests.get(url)
+    if response.status_code!=200:
+        print(response.status_code)
+        return False
+    book_data=response.json()
+    if 'items'not in book_data:
+        return None
+    volume_data=book_data['items'][0]['volumeInfo']
+    return volume_data
+
 class Book:
-    def __init__(self,title,author,isbn,available=True):
+    def __init__(self,title,author,isbn,book_info=None,available=True):
         self.title=title
         self.author=author
         self.isbn=isbn
         self.available=available
         self.borrowed_by = None
+        if book_info is None:
+            book_info=get_book_info(isbn)
+        self.description=book_info.get('description',"None")
+        self.page_count=book_info.get('pageCount','Unknown')
+        self.published_date=book_info.get('publishedDate','Unknown')
+        self.publisher=book_info.get('publisher','Unknown')
         print(f'{self.title} written by {self.author} is {"available" if available else "not available"}')
-        input("\nPress Enter to proceed...")
 
 class Member(ABC):
     def __init__(self,name,_member_id):
@@ -82,8 +102,15 @@ class Library:
         self.load_data()
     def save_data(self):
         data={
-            "books":[{"Title":b.title,"Author":b.author,"ISBN":b.isbn,"Available":b.available,
-                      "Borrowed By":b.borrowed_by._member_id if b.borrowed_by else None}
+            "books":[{"Title":b.title,
+                      "Author":b.author,
+                      "ISBN":b.isbn,
+                      "Available":b.available,
+                      "Description":b.description,
+                      "Borrowed By":b.borrowed_by._member_id if b.borrowed_by else None,
+                      "Page Count":b.page_count,
+                      "Published Date":b.published_date,
+                      "Publisher":b.publisher}
                 for b in self.books.values()
             ],
             "members":[{"Name":m.name,"ID":m._member_id,"Type":m.__class__.__name__,
@@ -104,8 +131,8 @@ class Library:
             return
         #loading boooks
         for b in data.get("books",[]):
-            isbn=int(b["ISBN"])
-            book=Book(b["Title"],b["Author"],b["ISBN"],b.get("Available",True))
+            isbn=str(b["ISBN"])
+            book=Book(b["Title"],b["Author"],b["ISBN"],available=b.get("Available",True))
             self.books[isbn]=book
         #loading members
         for m in data.get("members",[]):
@@ -159,19 +186,7 @@ class Library:
         else:
             print("Member not found")
             input("\nPress Enter to proceed...")
-    def find_book(self,isbn):
-        if isbn in self.books:
-            bookname=self.books[isbn]
-            if bookname.available:
-                print(f"The book with the isbn '{isbn}' is available")
-                input("\nPress Enter to proceed...")
-            else:
-                print(f"The book {bookname.title} is unavailable.",end=" ")
-                print(f"It was borrowed by {bookname.borrowed_by.name}")
-                input("\nPress Enter to proceed...")
-        else:
-            print("That book is not available in this library")
-            input("\nPress Enter to proceed...")
+    
     def list_all_available_books(self):
         print("----Available Books----")
         x=False
@@ -197,7 +212,6 @@ class Library:
 library=Library()
 
 
-print('\n')
 
 while True:
     print("\n--- Library Menu ---")
@@ -215,10 +229,14 @@ while True:
     
     choice = input("Enter your choice: ")
     if choice == "1":
-        a=input("Enter book title: ")
-        b=input("Enter the author: ")
-        c=int(input("Enter the isbn: "))
-        d=Book(a,b,c)
+        c=input("Enter the isbn: ")
+        book_info=get_book_info(c)
+        if not book_info:
+            print("Book info could not be retrieved")
+            continue
+        a=book_info['title']
+        b=book_info['authors'][0]
+        d=Book(a,b,c,book_info=book_info)
         library.add_book(d)
     elif choice=="2":
         while True:
@@ -241,51 +259,87 @@ while True:
                 print("Invalid.Try again")
     elif choice=="3":
         while True:
-            id=input("Input member ID: ")
-            member=library.members.get(id)
-            if member==None:
-                print("Invalid member ID\n")
-                continue
-            while True:
-                isbn=input("Enter the isbn: ")
-                book=library.books.get(int(isbn))
-                if book==None:
-                    print("Invalid isbn\n")
-                elif book:
-                    break
-            if member and book:
-                member.borrow_book(book)
+            id=input("Input member ID: ").strip()
+            if id.lower()=="cancel":
                 break
+            else:
+                member=library.members.get(id)
+                if member==None:
+                    print("Invalid member ID\n")
+                    continue
+                book=None
+                while True:
+                    isbn=input("Enter the isbn: ").strip()
+                    if isbn.lower()=="cancel":
+                        break
+                    else:
+                        book=library.books.get(isbn)
+                        if book==None:
+                            print("Invalid isbn\n")
+                            continue
+                        break
+                if member and book:
+                    member.borrow_book(book)
+                    break
     elif choice=="4":
         while True:
-            id=input("Input the member ID: ")
-            member=library.members.get(id)
-            if member==None:
-                print("Invalid member ID\n")
-                continue
-            while True:
-                isbn=input("Enter the isbn: ")
-                book=library.books.get(int(isbn))
-                if book==None:
-                    print("Invalid isbn\n")
+            id=input("Input the member ID: ").strip()
+            if id.lower()=="cancel":
+                break
+            else:
+                member=library.members.get(id)
+                if member==None:
+                    print("Invalid member ID\n")
                     continue
-                elif book:
+                book=None
+                while True:
+                    isbn=input("Enter the isbn: ").strip()
+                    if isbn.lower()=="cancel":
+                        break
+                    else:
+                        book=library.books.get(isbn)
+                        if book==None:
+                            print("Invalid isbn\n")
+                            continue
+                        elif book:
+                            break
+                if book:
+                    member.return_book(book)
                     break
-            member.return_book(book)
-            break
     elif choice=="5":
         id=input("Enter the member ID: ")
         library.find_member(id)
+    
     elif choice=="6":
         isbn=input("Enter the isbn: ")
-        library.find_book(int(isbn))
+        if isbn in library.books:
+            book_info=get_book_info(isbn)
+            if not book_info:
+                print("Book info could not be retrieved.")
+                continue
+            book=library.books.get(isbn)
+            print("----Book info----")
+            print(f"Title: {book_info['title']}")
+            print(f"Author: {book_info['authors'][0]}")
+            print(f"ISBN: {isbn}")
+            print(f"Description: {book.description}")
+            print(f"Availability: {book.available}")
+            borrowed_by = book.borrowed_by.name if book.borrowed_by else "None"
+            print(f"Borrowed By: {borrowed_by}")
+            print(f"Page Count: {book.page_count}")
+            print(f"Publisher: {book.publisher}")
+            print(f"Published Date: {book.published_date}")
+            input("\nPress Enter to proceed...")
+        else:
+            print("Book not in the Library")
+            input("\nPress Enter to proceed...")
     elif choice=="7":
         library.list_all_available_books()
     elif choice=="8":
         library.list_all_borrowed_books()
     elif choice=="9":
         d=input("Enter the isbn: ")
-        library.del_book(int(d))
+        library.del_book(d)
     elif choice=="10":
         d=input("Enter the member ID: ")
         library.del_member(d)

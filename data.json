@@ -3,30 +3,57 @@
         {
             "Title": "Harry Potter and the Goblet of Fire",
             "Author": "J.K.Rowling",
-            "ISBN": 9780439139595,
+            "ISBN": "9780439139595",
             "Available": true,
-            "Borrowed By": null
+            "Description": "Young wizard-in-training Harry Potter prepares for a competition between Hogwarts School of Magic and two rival schools, develops a crush on Cho Chang, and wishes above all to be a normal fourteen-year-old.",
+            "Borrowed By": null,
+            "Page Count": 0,
+            "Published Date": "2000",
+            "Publisher": "Unknown"
         },
         {
             "Title": "IT : A Novel",
             "Author": "Stephen King",
-            "ISBN": 9781501175466,
+            "ISBN": "9781501175466",
             "Available": false,
-            "Borrowed By": "st001"
+            "Description": "It began -- and ended -- in 1958 when seven children searched in the drains beneath Derry for an evil creature, but in 1985, Mike, once one of those children, makes six phone calls and disinters an unremembered promise that sets off the ultimate terror.",
+            "Borrowed By": "st001",
+            "Page Count": 1184,
+            "Published Date": "2017-09-05",
+            "Publisher": "Simon and Schuster"
         },
         {
             "Title": "Game of Thrones: A Song of Ice and Fire",
             "Author": "George R.R. Martin",
-            "ISBN": 9780553573404,
+            "ISBN": "9780553573404",
             "Available": false,
-            "Borrowed By": "st002"
+            "Description": "Fantasy-roman.",
+            "Borrowed By": "st002",
+            "Page Count": 876,
+            "Published Date": "1997-08-04",
+            "Publisher": "Bantam"
         },
         {
             "Title": "Diary of a Wimpy Kid: The Getaway",
             "Author": "Jeff Kinney",
-            "ISBN": 9780241344279,
+            "ISBN": "9780241344279",
             "Available": true,
-            "Borrowed By": null
+            "Description": "Get ready, Book 12 in the phenomenally bestselling DIARY OF A WIMPY KID series is coming! Join Greg on a family holiday he'll never forget! To escape the stress of the holidays, the Heffleys decide to get out of town and go to a resort instead of celebrating Christmas at home. BUt what's billed as a stress-free vacation becomes a holiday nightmare. THe funniest books you'll EVER read.",
+            "Borrowed By": null,
+            "Page Count": 224,
+            "Published Date": "2018-09",
+            "Publisher": "Puffin Books"
+        },
+        {
+            "Title": "Harry Potter and the Sorcerer's Stone",
+            "Author": "J. K. Rowling",
+            "ISBN": "0590353403",
+            "Available": false,
+            "Description": "Rescued from the outrageous neglect of his aunt and uncle, a young boy with a great destiny proves his worth while attending Hogwarts School for Witchcraft and Wizardry.",
+            "Borrowed By": "st001",
+            "Page Count": 328,
+            "Published Date": "1998",
+            "Publisher": "Arthur A. Levine Books"
         }
     ],
     "members": [
@@ -37,7 +64,11 @@
             "Borrowed books": [
                 {
                     "Title": "IT : A Novel",
-                    "ISBN": 9781501175466
+                    "ISBN": "9781501175466"
+                },
+                {
+                    "Title": "Harry Potter and the Sorcerer's Stone",
+                    "ISBN": "0590353403"
                 }
             ]
         },
@@ -48,7 +79,7 @@
             "Borrowed books": [
                 {
                     "Title": "Game of Thrones: A Song of Ice and Fire",
-                    "ISBN": 9780553573404
+                    "ISBN": "9780553573404"
                 }
             ]
         },
