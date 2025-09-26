@@ -16,18 +16,24 @@ def get_book_info(isbn):
     return volume_data
 
 class Book:
-    def __init__(self,title,author,isbn,book_info=None,available=True):
+    def __init__(self,title,author,isbn,book_info=None,available=True,stored_info=None):
         self.title=title
         self.author=author
         self.isbn=isbn
         self.available=available
         self.borrowed_by = None
-        if book_info is None:
-            book_info=get_book_info(isbn)
-        self.description=book_info.get('description',"None")
-        self.page_count=book_info.get('pageCount','Unknown')
-        self.published_date=book_info.get('publishedDate','Unknown')
-        self.publisher=book_info.get('publisher','Unknown')
+        if stored_info:
+            self.description=stored_info.get('description',"None")
+            self.page_count=stored_info.get('page_count','Unknown')
+            self.published_date=stored_info.get('published_date','Unknown')
+            self.publisher=stored_info.get('publisher','Unknown')
+        else:
+            if book_info is None:
+                book_info=get_book_info(isbn)
+            self.description=book_info.get('description',"None")
+            self.page_count=book_info.get('pageCount','Unknown')
+            self.published_date=book_info.get('publishedDate','Unknown')
+            self.publisher=book_info.get('publisher','Unknown')
         print(f'{self.title} written by {self.author} is {"available" if available else "not available"}')
 
 class Member(ABC):
@@ -129,10 +135,16 @@ class Library:
         except FileNotFoundError:
             print("file not found")
             return
-        #loading boooks
+        #loading books
         for b in data.get("books",[]):
             isbn=str(b["ISBN"])
-            book=Book(b["Title"],b["Author"],b["ISBN"],available=b.get("Available",True))
+            stored_info={
+                "description":b.get('Description','None'),
+                "page_count":b.get('Page Count','Unknown'),
+                "published_date":b.get('Published Date','Unknown'),
+                "publisher":b.get('Publisher','Unknown')
+            }
+            book=Book(b["Title"],b["Author"],b["ISBN"],available=b.get("Available",True),stored_info=stored_info)
             self.books[isbn]=book
         #loading members
         for m in data.get("members",[]):
@@ -155,7 +167,7 @@ class Library:
 
     def add_members(self,member):
         self.members[member._member_id]=member
-        library.save_data()
+        self.save_data()
     def add_book(self,book):
         self.books[book.isbn]=book
         self.save_data()
@@ -163,7 +175,7 @@ class Library:
         if member_id in self.members:
             deleted_member=self.members.pop(member_id)
             print(f"Deleted the member {deleted_member.name}")
-            library.save_data()
+            self.save_data()
             input("\nPress Enter to proceed...")
             
         else:
@@ -173,7 +185,7 @@ class Library:
         if isbn in self.books:
             deleted_book=self.books.pop(isbn)
             print(f'Deleted the book {deleted_book.title}' )
-            library.save_data()
+            self.save_data()
             input("\nPress Enter to proceed...")
         else:
             print("Book not found")

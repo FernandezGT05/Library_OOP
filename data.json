@@ -4,9 +4,9 @@
             "Title": "Harry Potter and the Goblet of Fire",
             "Author": "J.K.Rowling",
             "ISBN": "9780439139595",
-            "Available": true,
+            "Available": false,
             "Description": "Young wizard-in-training Harry Potter prepares for a competition between Hogwarts School of Magic and two rival schools, develops a crush on Cho Chang, and wishes above all to be a normal fourteen-year-old.",
-            "Borrowed By": null,
+            "Borrowed By": "t002",
             "Page Count": 0,
             "Published Date": "2000",
             "Publisher": "Unknown"
@@ -54,6 +54,17 @@
             "Page Count": 328,
             "Published Date": "1998",
             "Publisher": "Arthur A. Levine Books"
+        },
+        {
+            "Title": "The Percy Jackson and the Olympians, Book One: Lightning Thief",
+            "Author": "Rick Riordan",
+            "ISBN": "0786856297",
+            "Available": true,
+            "Description": "Percy Jackson is a good kid, but he can't seem to focus on his schoolwork or control his temper. And lately, being away at boarding school is only getting worse-Percy could have sworn his pre-algebra teacher turned into a monster and tried to kill him. When Percy's mom finds out, she knows it's time that he knew the truth about where he came from, and that he go to the one place he'll be safe. She sends Percy to Camp Half Blood, a summer camp for demigods (on Long Island), where he learns that the father he never knew is Poseidon, God of the Sea. Soon a mystery unfolds and together with his friends -- one a satyr and the other the demigod daughter of Athena -- Percy sets out on a quest across the United States to reach the gates of the Underworld (located in a recording studio in Hollywood) and prevent a catastrophic war between the gods.",
+            "Borrowed By": null,
+            "Page Count": 384,
+            "Published Date": "2005-06-14",
+            "Publisher": "Disney-Hyperion"
         }
     ],
     "members": [
@@ -88,6 +99,17 @@
             "ID": "t001",
             "Type": "Teacher",
             "Borrowed books": []
+        },
+        {
+            "Name": "Treesa",
+            "ID": "t002",
+            "Type": "Teacher",
+            "Borrowed books": [
+                {
+                    "Title": "Harry Potter and the Goblet of Fire",
+                    "ISBN": "9780439139595"
+                }
+            ]
         }
     ]
 }
